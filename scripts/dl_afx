@@ -1,0 +1,62 @@
+#!/usr/bin/env bash
+#
+# Author:
+#   mmtrt [Taqi Raza]
+#
+# Description:
+#   download and prepare anifx for snap
+#
+# Date: Aug 27 2018
+#
+
+dlafx () {
+    wget https://portableapps.duckduckgo.com/AniFXPortable_1.0_Rev_2.paf.exe &> /dev/null
+}
+
+dli7z16x64 () {
+    for dldebs in https://launchpad.net/ubuntu/+source/p7zip/16.02+dfsg-4/+build/13091326/+files/p7zip_16.02+dfsg-4_amd64.deb https://launchpad.net/ubuntu/+source/p7zip/16.02+dfsg-4/+build/13091326/+files/p7zip-full_16.02+dfsg-4_amd64.deb 
+    do
+    wget $dldebs &> /dev/null
+    done
+
+    for pkgdebins in p7zip_16.02+dfsg-4_amd64.deb p7zip-full_16.02+dfsg-4_amd64.deb
+    do
+    sudo apt install ./$pkgdebins -y &> /dev/null
+    rm $pkgdebins
+    done
+}
+
+mkafx () {
+    mkdir -p usr/share && mkdir wine-platform
+    7z x AniFXPortable_1.0_Rev_2.paf.exe -otmp AniFX -r -x'!*.dat' -x'!*.cfg' &> /dev/null
+    find ./tmp -name AniFX -exec cp -R {} usr/share \;
+    rm -r ./tmp && cp -R usr/share/AniFX usr/share/anifx && rm -r usr/share/AniFX && cp usr/share/anifx/AniFX.exe usr/share/anifx/anifx.exe
+    find "usr" -type d -execdir chmod 755 {} +
+    mkdir -p usr/share/pixmaps && mkdir -p usr/share/applications && mkdir bin
+    wrestool -x -t3 -n6 usr/share/anifx/anifx.exe --raw > usr/share/pixmaps/anifx.png
+}
+
+mkdsk () {
+cat > anifx.desktop <<'EOF1'
+[Desktop Entry]
+Name=AniFX
+GenericName=Cursor Editor
+Comment=AniFX is a application developed to help you create and edit mouse cursors.
+Encoding=UTF-8
+Version=1.0
+Type=Application
+Terminal=false
+Icon=${SNAP}/usr/share/pixmaps/anifx.png
+TryExec=anifx
+Exec=anifx %F
+StartupWMClass=anifx.exe
+Categories=Graphics
+MimeType=image/x-win-bitmap;application/x-navi-animation
+EOF1
+}
+
+dlafx
+dli7z16x64
+mkdsk
+mkafx
+mv anifx bin && mv anifx.desktop usr/share/applications && cp -R -p {bin,usr,wine-platform} $SNAPCRAFT_PART_INSTALL

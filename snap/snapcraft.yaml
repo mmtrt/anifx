@@ -1,0 +1,51 @@
+name: anifx
+version: 1.0
+summary: anifx is a free cursor editor with many features.
+description: |
+ Features
+ * Support for animated (ANI) cursors
+ * Create animated GIF files
+ * Create cursor libraries
+ * Easily convert images to cursors
+ * Add, change or delete cursors inside exe files
+ * Support for transparency (alpha channel)
+ * Batch processing for import, export and extract
+ * Multiple language support
+ * More than 40 effects + custom filter
+ * Resolutions up to 256x256
+ * Data types: 2, 16, 256, True Color, True Color + Alpha
+ * Import and export images
+ * Transparent, Brighten/Darken, Blur/Sharpen tools
+
+confinement: strict
+grade: stable
+architectures:
+  - build-on: amd64
+    run-on: [amd64, i386]
+
+plugs:
+  wine-platform-plug:
+    content: wine-base-stable
+    interface: content
+    target: $SNAP/wine-platform
+    default-provider: wine-platform-i386
+
+apps:
+  anifx:
+    command: anifx
+    desktop: usr/share/applications/anifx.desktop
+    plugs: [ wayland, x11, opengl, home, desktop, desktop-legacy, network, pulseaudio, hardware-observe, process-control, cups-control, removable-media, wine-platform-plug ]
+
+parts:
+  anifx:
+    plugin: nil
+    source: ./scripts
+    override-build: |
+      snapcraftctl build
+      set -ex
+      ./dl_afx
+    stage:
+      - bin
+      - usr
+      - wine-platform
+    build-packages: [wget, icoutils]
