@@ -27,12 +27,11 @@ dli7z16x64 () {
 }
 
 mkafx () {
-    mkdir -p usr/share && mkdir wine-platform
+    mkdir ./{wine-platform,bin} && mkdir -p usr/share/{pixmaps,applications}
     7z x AniFXPortable_1.0_Rev_2.paf.exe -otmp AniFX -r -x'!*.dat' -x'!*.cfg' &> /dev/null
     find ./tmp -name AniFX -exec cp -R {} usr/share \;
     rm -r ./tmp && cp -R usr/share/AniFX usr/share/anifx && rm -r usr/share/AniFX && cp usr/share/anifx/AniFX.exe usr/share/anifx/anifx.exe
     find "usr" -type d -execdir chmod 755 {} +
-    mkdir -p usr/share/pixmaps && mkdir -p usr/share/applications && mkdir bin
     wrestool -x -t3 -n6 usr/share/anifx/anifx.exe --raw > usr/share/pixmaps/anifx.png
 }
 
