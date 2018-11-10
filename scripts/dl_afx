@@ -10,7 +10,7 @@
 #
 
 dlafx () {
-    wget https://portableapps.duckduckgo.com/AniFXPortable_1.0_Rev_2.paf.exe &> /dev/null
+    wget http://download3.portableapps.com/portableapps/AniFXPortable/AniFXPortable_1.0_Rev_2.paf.exe?201806 -O AniFXPortable_1.0_Rev_2.paf.exe &> /dev/null
 }
 
 dli7z16x64 () {
