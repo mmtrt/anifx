@@ -10,7 +10,7 @@
 #
 
 dlafx () {
-    wget http://download3.portableapps.com/portableapps/AniFXPortable/AniFXPortable_1.0_Rev_2.paf.exe?201806 -O AniFXPortable_1.0_Rev_2.paf.exe &> /dev/null
+    wget https://download3.portableapps.com/portableapps/AniFXPortable/AniFXPortable_1.0_Rev_3.paf.exe?20190321 -O AniFXPortable_1.0_Rev_3.paf.exe &> /dev/null
 }
 
 dli7z16x64 () {
@@ -28,7 +28,7 @@ dli7z16x64 () {
 
 mkafx () {
     mkdir -p ./{wine-runtime,wine-platform,bin} && mkdir -p sommelier/hooks && mkdir -p usr/share/{pixmaps,applications}
-    7z x AniFXPortable_1.0_Rev_2.paf.exe -otmp AniFX -r -x'!*.dat' -x'!*.cfg' &> /dev/null
+    7z x AniFXPortable_1.0_Rev_3.paf.exe -otmp AniFX -r -x'!*.dat' -x'!*.cfg' &> /dev/null
     find ./tmp -name AniFX -exec cp -R {} usr/share \;
     rm -r ./tmp && cp -R usr/share/AniFX usr/share/anifx && rm -r usr/share/AniFX && mv usr/share/anifx/AniFX.exe usr/share/anifx/anifx.exe
     find "usr" -type d -execdir chmod 755 {} +
