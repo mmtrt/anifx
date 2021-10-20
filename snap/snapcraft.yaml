@@ -1,4 +1,5 @@
 name: anifx
+title: AniFX (WINE)
 version: '1.0'
 summary: anifx is a free cursor editor with many features.
 description: |
@@ -23,31 +24,64 @@ architectures:
   - build-on: amd64
     run-on: [amd64, i386]
 base: core18
+compression: lzo
 
 plugs:
   wine-runtime:
     interface: content
     target: $SNAP/wine-runtime
     default-provider: wine-platform-runtime
-  wine-3-stable:
+  wine-6-stable:
     interface: content
     target: $SNAP/wine-platform
-    default-provider: wine-platform-3-stable
-  icon-themes:
-    interface: content
-    target: $SNAP/data-dir/icons
-    default-provider: gtk-common-themes
+    default-provider: wine-platform-6-stable
+
+environment:
+  WINEDLLOVERRIDES: "mscoree,mshtml=" # Prevent pop-ups about Wine Mono and Wine Gecko
+  RUN_EXE: "$SNAP_USER_DATA/anifx/anifx.exe"
+  SOMMELIER_KEEP_CWD: "1" # Don't change the working directory so relative paths still work
+  NO_AT_BRIDGE: "1" # Fix yad error Failed to connect to socket /tmp/dbus-xxx: No such file or directory
 
 apps:
   anifx:
-    command: anifx
+    extensions: [ gnome-3-28 ]
+    command: bin/sommelier run-exe
+    plugs:
+      - opengl
+      - home
+      - network
+      - hardware-observe
+      - process-control
+      - cups-control
+      - removable-media
     desktop: usr/share/applications/anifx.desktop
-    plugs: [ wayland, x11, opengl, home, desktop, desktop-legacy, network, pulseaudio, hardware-observe, process-control, cups-control, removable-media, icon-themes, wine-runtime, wine-3-stable ]
+  # The wine command can be used to run applications inside the wine
+  # environment that this snap uses.
+  #
+  # For example, users can configure the wine environment of this snap
+  # by running `myapp.wine winecfg`.
+  wine:
+    extensions: [ gnome-3-28 ]
+    command: bin/sommelier
+    plugs:
+      - home
+      - network
+      - hardware-observe
+      - process-control
+      - cups-control
+      - removable-media
+  # The winetricks command can be used to run winetricks inside the wine
+  # environment that this snap uses.
+  winetricks:
+    extensions: [ gnome-3-28 ]
+    command: bin/sommelier winetricks
+    plugs:
+      - network
 
 parts:
   anifx:
     plugin: nil
-    source: ./snap/local/scripts
+    source: ./snap/local/src
     override-build: |
       snapcraftctl build
       set -ex
@@ -57,4 +91,11 @@ parts:
       - usr
       - wine-platform
       - wine-runtime
+      - sommelier
     build-packages: [wget, icoutils]
+  # The sommelier script helps you snap Windows applications using Wine. It
+  # initializes and configures Wine and installs the Windows application.
+  sommelier:
+    plugin: make
+    source: https://github.com/mmtrt/sommelier-core.git
+    source-branch: "tmp"
