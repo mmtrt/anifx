@@ -27,7 +27,7 @@ dli7z16x64 () {
 }
 
 mkafx () {
-    mkdir -p ./{wine-runtime,wine-platform,bin} && mkdir -p usr/share/{pixmaps,applications}
+    mkdir -p ./{wine-runtime,wine-platform,bin} && mkdir -p sommelier/hooks && mkdir -p usr/share/{pixmaps,applications}
     7z x AniFXPortable_1.0_Rev_2.paf.exe -otmp AniFX -r -x'!*.dat' -x'!*.cfg' &> /dev/null
     find ./tmp -name AniFX -exec cp -R {} usr/share \;
     rm -r ./tmp && cp -R usr/share/AniFX usr/share/anifx && rm -r usr/share/AniFX && mv usr/share/anifx/AniFX.exe usr/share/anifx/anifx.exe
@@ -58,4 +58,4 @@ dlafx
 dli7z16x64
 mkdsk
 mkafx
-mv anifx bin && mv anifx.desktop usr/share/applications && cp -R -p {bin,usr,wine-runtime,wine-platform} $SNAPCRAFT_PART_INSTALL
+mv pre-install sommelier/hooks && mv anifx.desktop usr/share/applications && cp -R -p {sommelier,bin,usr,wine-runtime,wine-platform} $SNAPCRAFT_PART_INSTALL
